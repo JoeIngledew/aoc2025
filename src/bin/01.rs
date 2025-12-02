@@ -29,7 +29,7 @@ impl std::fmt::Display for Instruct {
 fn to_instruction(s: &str) -> Instruct {
     let (a, b) = s.split_at(1);
     let num = b.parse::<u64>().unwrap();
-    let direction = if a == "L".to_string() {
+    let direction = if a == "L" {
         Direction::Left
     } else {
         Direction::Right

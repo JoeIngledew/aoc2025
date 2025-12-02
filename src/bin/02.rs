@@ -2,13 +2,11 @@ advent_of_code::solution!(2);
 
 // some slightly wobbly unwraps to be tidied up / handled properly
 fn parse_range(s: &str) -> Vec<u64> {
-    let (start, end) = s
-        .split_once("-")
-        .unwrap();
+    let (start, end) = s.split_once("-").unwrap();
     let start_n = start.parse::<u64>().unwrap();
     let end_n = end.parse::<u64>().unwrap();
     let mut res = Vec::new();
-    for i in start_n..(end_n+1) {
+    for i in start_n..(end_n + 1) {
         res.push(i);
     }
     res
@@ -25,7 +23,7 @@ fn is_id_invalid(id_num: &&u64) -> bool {
     }
 }
 
-// again, must be a better way to do this, possibly using 
+// again, must be a better way to do this, possibly using
 // factors of 10 and modulo or smth
 // but alas I am dumb
 fn is_id_invalid_pt2(id: &&u64) -> bool {
@@ -40,29 +38,30 @@ fn is_id_invalid_pt2(id: &&u64) -> bool {
             let (head, tail) = id_str.split_at(current_slice_size);
             let repeats = (len / current_slice_size) - 1;
             let cmp = vec![head; repeats].concat();
-            invalid = cmp == tail.to_string()
+            invalid = cmp == *tail
         }
         current_slice_size += 1;
     }
     invalid
 }
 
-
 pub fn part_one(input: &str) -> Option<u64> {
-    let ranges = input.split(",").map(parse_range).collect::<Vec<Vec<u64>>>().concat();
-    let res = ranges
-        .iter()
-        .filter(is_id_invalid)
-        .sum();
+    let ranges = input
+        .split(",")
+        .map(parse_range)
+        .collect::<Vec<Vec<u64>>>()
+        .concat();
+    let res = ranges.iter().filter(is_id_invalid).sum();
     Some(res)
 }
 
 pub fn part_two(input: &str) -> Option<u64> {
-    let ranges = input.split(",").map(parse_range).collect::<Vec<Vec<u64>>>().concat();
-    let res = ranges
-        .iter()
-        .filter(is_id_invalid_pt2)
-        .sum();
+    let ranges = input
+        .split(",")
+        .map(parse_range)
+        .collect::<Vec<Vec<u64>>>()
+        .concat();
+    let res = ranges.iter().filter(is_id_invalid_pt2).sum();
     Some(res)
 }
 
