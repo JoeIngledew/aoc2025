@@ -25,9 +25,28 @@ fn is_id_invalid(id_num: &&u64) -> bool {
     }
 }
 
+// again, must be a better way to do this, possibly using 
+// factors of 10 and modulo or smth
+// but alas I am dumb
 fn is_id_invalid_pt2(id: &&u64) -> bool {
-    todo!();
+    let mut invalid = false;
+    let id_str = id.to_string();
+    let len = id_str.len();
+    let max_slice_size = len / 2;
+    let mut current_slice_size: usize = 1;
+    while !invalid && current_slice_size <= max_slice_size {
+        // ignore if not evenly divisible
+        if len % current_slice_size == 0 {
+            let (head, tail) = id_str.split_at(current_slice_size);
+            let repeats = (len / current_slice_size) - 1;
+            let cmp = vec![head; repeats].concat();
+            invalid = cmp == tail.to_string()
+        }
+        current_slice_size += 1;
+    }
+    invalid
 }
+
 
 pub fn part_one(input: &str) -> Option<u64> {
     let ranges = input.split(",").map(parse_range).collect::<Vec<Vec<u64>>>().concat();
@@ -39,7 +58,12 @@ pub fn part_one(input: &str) -> Option<u64> {
 }
 
 pub fn part_two(input: &str) -> Option<u64> {
-    None
+    let ranges = input.split(",").map(parse_range).collect::<Vec<Vec<u64>>>().concat();
+    let res = ranges
+        .iter()
+        .filter(is_id_invalid_pt2)
+        .sum();
+    Some(res)
 }
 
 #[cfg(test)]
@@ -55,6 +79,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(4174379265));
     }
 }
