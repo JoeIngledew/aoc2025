@@ -28,10 +28,10 @@ fn find_largest_num(cs: Vec<char>) -> u64 {
 fn find_largest_num_pt2(cs: Vec<char>) -> u64 {
     let mut digits_str = "".to_string();
     let mut start_ix = 0usize;
-    for i in [11usize,10,9,8,7,6,5,4,3,2,1,0] {
+    for i in [11usize, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0] {
         let mut highest = '0';
         let mut highest_ix = 0usize;
-        let mut curr_ix = 0 + start_ix;
+        let mut curr_ix = start_ix;
         while highest != '9' && curr_ix < (cs.len() - i) {
             if cs[curr_ix] > highest {
                 highest = cs[curr_ix];
@@ -40,19 +40,27 @@ fn find_largest_num_pt2(cs: Vec<char>) -> u64 {
             curr_ix += 1;
         }
         digits_str = format!("{}{}", digits_str, highest);
-        start_ix = highest_ix+1;
+        start_ix = highest_ix + 1;
     }
     digits_str.parse::<u64>().unwrap()
 }
 
 pub fn part_one(input: &str) -> Option<u64> {
-    let res: u64 = input.lines().map(|l| l.chars().collect::<Vec<char>>()).map(find_largest_num).sum();
-    Some(res as u64)
+    let res: u64 = input
+        .lines()
+        .map(|l| l.chars().collect::<Vec<char>>())
+        .map(find_largest_num)
+        .sum();
+    Some(res)
 }
 
 pub fn part_two(input: &str) -> Option<u64> {
-    let res: u64 = input.lines().map(|l| l.chars().collect::<Vec<char>>()).map(find_largest_num_pt2).sum();
-    Some(res as u64)
+    let res: u64 = input
+        .lines()
+        .map(|l| l.chars().collect::<Vec<char>>())
+        .map(find_largest_num_pt2)
+        .sum();
+    Some(res)
 }
 
 #[cfg(test)]

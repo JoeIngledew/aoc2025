@@ -34,7 +34,7 @@ fn is_id_invalid_pt2(id: &&u64) -> bool {
     let mut current_slice_size: usize = 1;
     while !invalid && current_slice_size <= max_slice_size {
         // ignore if not evenly divisible
-        if len % current_slice_size == 0 {
+        if len.is_multiple_of(current_slice_size) {
             let (head, tail) = id_str.split_at(current_slice_size);
             let repeats = (len / current_slice_size) - 1;
             let cmp = vec![head; repeats].concat();
