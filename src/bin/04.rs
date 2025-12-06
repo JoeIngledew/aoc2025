@@ -15,38 +15,58 @@ impl Point {
 
     pub fn around(&self) -> Vec<Self> {
         let mut points: Vec<Self> = Vec::new();
-        points.push(Self { x: self.x + 1, y: self.y });
-        points.push(Self { x: self.x + 1, y: self.y + 1 });
-        points.push(Self { x: self.x, y: self.y + 1 });
+        points.push(Self {
+            x: self.x + 1,
+            y: self.y,
+        });
+        points.push(Self {
+            x: self.x + 1,
+            y: self.y + 1,
+        });
+        points.push(Self {
+            x: self.x,
+            y: self.y + 1,
+        });
         if self.x != 0 && self.y != 0 {
-            points.push(Self { x: self.x - 1, y: self.y - 1 });
+            points.push(Self {
+                x: self.x - 1,
+                y: self.y - 1,
+            });
         }
         if self.x != 0 {
-            points.push(Self { x: self.x - 1, y: self.y });
-            points.push(Self { x: self.x - 1, y: self.y + 1});
+            points.push(Self {
+                x: self.x - 1,
+                y: self.y,
+            });
+            points.push(Self {
+                x: self.x - 1,
+                y: self.y + 1,
+            });
         }
         if self.y != 0 {
-            points.push(Self { x: self.x, y: self.y - 1 });
-            points.push(Self { x: self.x + 1, y: self.y - 1 });
+            points.push(Self {
+                x: self.x,
+                y: self.y - 1,
+            });
+            points.push(Self {
+                x: self.x + 1,
+                y: self.y - 1,
+            });
         }
         points
     }
 }
 
 fn parse_input(input: &str) -> HashMap<Point, bool> {
-    let mut lines = input.lines().clone();
-    let mut y = 0;
+    let lines = input.lines().clone();
     let mut res: HashMap<Point, bool> = HashMap::new();
-    while let Some(line) = lines.next() {
-        let mut chars = line.chars();
-        let mut x = 0;
-        while let Some(c) = chars.next() {
+    for (y, line) in lines.enumerate() {
+        let chars = line.chars();
+        for (x, c) in chars.enumerate() {
             let point = Point { x, y };
             let is_paper = c == '@';
             res.insert(point, is_paper);
-            x += 1;
         }
-        y += 1
     }
     res
 }
@@ -59,11 +79,9 @@ pub fn part_one(input: &str) -> Option<u64> {
         // only look if it's a paper square
         if *v {
             let around = k.around();
-            let around_paper = around.iter().filter(|p| {
-                if let Some(a) = map.get(p) {
-                    *a
-                } else { false }
-            });
+            let around_paper = around
+                .iter()
+                .filter(|p| if let Some(a) = map.get(p) { *a } else { false });
             if around_paper.count() < 4 {
                 valid_points.push(Point::new(k.x, k.y));
             }
@@ -82,11 +100,9 @@ pub fn part_two(input: &str) -> Option<u64> {
             // only look if it's a paper square
             if *v {
                 let around = k.around();
-                let around_paper = around.iter().filter(|p| {
-                    if let Some(a) = map.get(p) {
-                        *a
-                    } else { false }
-                });
+                let around_paper = around
+                    .iter()
+                    .filter(|p| if let Some(a) = map.get(p) { *a } else { false });
                 if around_paper.count() < 4 {
                     valid_points.push(Point::new(k.x, k.y));
                 }
