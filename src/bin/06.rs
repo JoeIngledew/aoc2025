@@ -62,68 +62,51 @@ pub fn part_one(input: &str) -> Option<u64> {
     Some(result)
 }
 
-fn _pt2_2(_input: &str) {
-    // let mut map: HashMap<usize, Vec<char>> = HashMap::new();
-    // for l in input.lines() {
-    //     for (ix, c) in l.chars().enumerate() {
-    //         //map.entry(&ix).and_modify(|v| v)
-    //         todo!();
-    //     }
-    // }
-}
-
-fn _pt2(input: &str) -> Option<u64> {
-    let lines = input.lines();
-    let mut reversed = lines.rev();
-    let _op_line: Vec<(usize, char)> = reversed.next().unwrap().chars().rev().enumerate().collect();
-    let original_order: Vec<&str> = reversed.rev().collect();
-    let _split_strings: Vec<Vec<(usize, char)>> = original_order
+fn pt2_again(input: &str) -> Option<u64> {
+    let lines: Vec<&str> = input.lines().collect();
+    let lines_count = lines.len();
+    let column_count = lines[0].len();
+    let op_line = lines[lines_count - 1];
+    let other_lines: Vec<String> = lines
         .iter()
-        .map(|s| {
-            let chars: Vec<(usize, char)> = s.chars().rev().enumerate().collect();
-            chars
-        })
+        .cloned()
+        .take(lines_count - 1)
+        .map(str::to_string)
         .collect();
-    // for ((op_ix, op), ) in op_line.iter().zip(split_strings) {
 
-    // }
-    todo!()
+    let mut result: u64 = 0;
+    let mut number_scratchpad: Vec<u64> = Vec::new();
+    for x in 0..column_count {
+        let ix = column_count - (x + 1);
+        let op = op_line.chars().nth(ix).unwrap();
+        let nums: String = other_lines
+            .iter()
+            .map(|f| f.chars().nth(ix).unwrap())
+            .collect();
+        let trimmed = nums.trim();
+        if let Ok(n) = trimmed.parse::<u64>() {
+            number_scratchpad.push(n);
+        }
+        match Operator::try_from(op) {
+            Ok(Operator::Mult) => {
+                let product: u64 = number_scratchpad.iter().product();
+                result += product;
+                number_scratchpad.clear();
+            }
+            Ok(Operator::Plus) => {
+                let sum: u64 = number_scratchpad.iter().sum();
+                result += sum;
+                number_scratchpad.clear();
+            }
+            Err(_) => (),
+        }
+    }
+
+    Some(result)
 }
 
 pub fn part_two(input: &str) -> Option<u64> {
-    let lines = input.lines();
-    let mut reversed = lines.rev();
-    let _operator_line: Vec<(usize, Operator)> = reversed
-        .next()
-        .unwrap()
-        .chars()
-        .enumerate()
-        .filter_map(|(cix, c)| match Operator::try_from(c) {
-            Ok(op) => Some((cix, op)),
-            Err(_) => None,
-        })
-        .collect();
-
-    let num_lines: Vec<&str> = reversed.rev().collect();
-    // let char_indexed: Vec<(usize, usize, char)> = num_lines
-    //     .iter()
-    //     .enumerate()
-    //     .flat_map(|(y, l)| l.chars().enumerate().map(|(x, c)| (x, y, c))))
-    //     .collect();
-    // let mut nums: Vec<(usize, Vec<char>)> =
-
-    let mut nums: HashMap<usize, Vec<&str>> = HashMap::new();
-    for line in &num_lines {
-        for (ix, n) in line.split_ascii_whitespace().enumerate() {
-            nums.entry(ix).and_modify(|v| v.push(n)).or_insert(vec![n]);
-        }
-    }
-    // let result = operator_line.iter().enumerate().map(|(ix, op)| {
-    //     let strs = nums.get(&ix).unwrap();
-    //     let digits = strs.iter().enumerate().map()
-    // })
-
-    None
+    pt2_again(input)
 }
 
 #[cfg(test)]
@@ -139,6 +122,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(3263827));
     }
 }
