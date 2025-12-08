@@ -24,7 +24,7 @@ impl From<char> for Item {
 #[derive(PartialEq, Eq, Debug, Clone, Copy, Hash)]
 struct Point {
     col: usize,
-    line: usize
+    line: usize,
 }
 
 impl Point {
