@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 advent_of_code::solution!(5);
 
@@ -199,6 +199,47 @@ fn collapse_ranges_once(ranges: &mut HashMap<u64, u64>, new_range: (u64, u64)) -
     (start, end)
 }
 
+fn overlap(lowest: &u64, highest: &u64, test_low: &u64, test_high: &u64) -> Option<(u64, u64)> {
+    if lowest == test_low && highest == test_high {
+        // same
+        Some((*lowest, *highest))
+    } else if lowest < test_low && highest <= test_high {
+        // starts lower, ends within
+        Some((*lowest, *test_high))
+    } else if lowest >= test_low && highest > test_high {
+        // starts within, ends higher
+        Some((*test_low, *highest))
+    } else if lowest > test_low && highest < test_high {
+        // entirely within
+        Some((*test_low, *test_high))
+    } else {
+        // no overlap
+        None
+    }
+}
+
+fn part2_tryagain(input: &str) -> u64 {
+    let (relevant_str, _) = input.split_once("\n\n").unwrap();
+    let mut ranges: HashSet<(u64, u64)> = HashSet::new();
+    for line in relevant_str.lines() {
+        let (lower, upper) = line.split_once("-").unwrap();
+        let lower = lower.parse::<u64>().unwrap();
+        let upper = upper.parse::<u64>().unwrap();
+        let mut lowest = lower;
+        let mut highest = upper;
+        for (e_a, e_b) in &ranges.clone() {
+            if let Some((low, high)) = overlap(&lowest, &highest, e_a, e_b) {
+                lowest = low;
+                highest = high;
+                let _ = &ranges.remove(&(*e_a, *e_b));
+            }
+            let _ = &ranges.insert((lowest, highest));
+        }
+    }
+    let total: u64 = ranges.iter().map(|(a, b)| *b - *a).sum();
+    total
+}
+
 // fn pt2(input: &str) {
 //     let mut ranges: HashMap<u64, u64> = HashMap::new();
 //     let mut lines = input.lines();
@@ -231,22 +272,6 @@ fn collapse_ranges_once(ranges: &mut HashMap<u64, u64>, new_range: (u64, u64)) -
 //     }
 // }
 
-fn pt2(input: &str) -> u64 {
-    let mut ranges: HashMap<u64, u64> = HashMap::new();
-    let mut lines = input.lines();
-    while let Some(l) = lines.next()
-        && !l.is_empty()
-    {
-        let (start, end) = l.split_once("-").unwrap();
-        let start = start.parse::<u64>().unwrap();
-        let end = end.parse::<u64>().unwrap() + 1;
-        ranges = collapse_ranges(ranges, (start, end));
-    }
-    let xs = ranges.iter().map(|(s, e)| *e - *s);
-    let res: u64 = xs.sum();
-    res
-}
-
 impl Input2 {
     fn count_fresh(&self) -> u64 {
         self.available
@@ -270,7 +295,7 @@ pub fn part_two(input: &str) -> Option<u64> {
     // dbg!(&ranges.len());
     // let combined_length: u64 = ranges.iter().map(|r| r.end - r.start).sum();
     // Some(combined_length)
-    let res = pt2(input);
+    let res = part2_tryagain(input);
     Some(res)
 }
 

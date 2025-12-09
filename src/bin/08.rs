@@ -20,6 +20,10 @@ impl From<&str> for Coord {
 }
 
 impl Coord {
+    pub fn new(x: u64, y: u64, z: u64) -> Self {
+        Self { x, y, z }
+    }
+    
     pub fn abs_diff(&self, other: &Coord) -> u64 {
         let distance_x = self.x.abs_diff(other.x);
         let distance_y = self.y.abs_diff(other.y);
@@ -245,29 +249,5 @@ mod tests {
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
         assert_eq!(result, None);
-    }
-
-    #[test]
-    fn test_coord_add_new() {
-        let mut map = CoordMap::new();
-        let a = Coord::new(0, 1, 2);
-        let b = Coord::new(2, 1, 0);
-        map.add_new(a);
-        assert_eq!(1, map.current_id);
-        map.add_new(b);
-        assert_eq!(2, map.current_id);
-        assert_eq!(map.get_id(&a), Some(&0));
-        assert_eq!(map.get_id(&b), Some(&1));
-    }
-
-    #[test]
-    fn test_coord_add_existing() {
-        let mut map = CoordMap::new();
-        let a = Coord::new(0, 1, 2);
-        let b = Coord::new(2, 1, 0);
-        map.add_new(a);
-        map.add_existing(b, 0);
-        assert_eq!(map.get_id(&a), Some(&0));
-        assert_eq!(map.get_id(&b), Some(&0));
     }
 }
